@@ -24,6 +24,10 @@
     <Reference Include="TwoPhaseCommit">
       <HintPath>..\bin\net7.0\TwoPhaseCommit.dll</HintPath>
     </Reference>
+
+    <Reference Include="ReliableBroadcast">
+      <HintPath>..\bin\net7.0\ReliableBroadcast.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

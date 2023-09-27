@@ -20,15 +20,18 @@ namespace TestDriver
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            var configuration = Configuration.Create().WithTestingIterations(100)
+            var configuration = Configuration.Create().WithTestingIterations(10000)
                  .WithMaxSchedulingSteps(50);
             configuration.WithSystematicFuzzingEnabled();
             configuration.WithVerbosityEnabled(VerbosityLevel.Info);
             configuration.WithTelemetryEnabled(false);
             configuration.WithConsoleLoggingEnabled(true);
 
-            RunTest(TwoPhaseCommit.Program.Execute, configuration,
-                 "TwoPhaseCommit");
+            RunTest(ReliableBroadcast.Program.Execute, configuration,
+                 "ReliableBroadcast");
+
+            // RunTest(TwoPhaseCommit.Program.Execute, configuration,
+            //      "TwoPhaseCommit");
 
             // RunTest(Microsoft.Coyote.Samples.CloudMessaging.Raft.Mocking.Program.Execute, configuration,
             //    "CloudMessaging.TestWithMocking");
