@@ -26,6 +26,7 @@ public class Process : StateMachine
     [OnEventDoAction(typeof(RbBroadcastEvent), nameof(BebBroadcast))]
     [OnEventDoAction(typeof(SingleMessageEvent), nameof(SendSingleEvent))]
     [OnEventDoAction(typeof(MessageEvent), nameof(BebDeliver))]
+    [OnEventDoAction(typeof(RbDeliverEvent), nameof(RbDeliver))]
     [OnEventDoAction(typeof(CrashEvent), nameof(HandleCrash))]
     [OnEventDoAction(typeof(GetMessagesEvent), nameof(HandleGetMessages))]
     private class Working : State { }
@@ -64,16 +65,17 @@ public class Process : StateMachine
         if (!this.delivered.Contains(msg.MessageId))
         {
             this.delivered.Add(msg.MessageId);
-            this.RbDeliver(msg.Message);
+            this.SendEvent(this.Id, new RbDeliverEvent(msg.Message));
 
             msg.Sender = this.Id;
-            this.BebBroadcast(msg);
+            this.SendEvent(this.Id, new RbBroadcastEvent(msg));
         }
     }
 
-    private void RbDeliver(string msg)
+    private void RbDeliver(Event e)
     {
-        this.Messages.Add(msg);
+        var msg = e as RbDeliverEvent;
+        this.Messages.Add(msg.Message);
     }
 
     public void RegisterProcess(Event e)

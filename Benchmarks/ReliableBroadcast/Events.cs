@@ -30,6 +30,21 @@ namespace ReliableBroadcast
     }
 
     [DataContract]
+    public class RbDeliverEvent : Event
+    {
+        /// <summary>
+        /// The server id that is being registered.
+        /// </summary>
+        [DataMember]
+        public string Message;
+
+        public RbDeliverEvent(string message)
+        {
+            this.Message = message;
+        }
+    }
+
+    [DataContract]
     public class MessageEvent : Event
     {
         [DataMember]
