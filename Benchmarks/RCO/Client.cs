@@ -42,6 +42,36 @@ public class Client : Actor
         }
     }
 
+    public class DuplicateException : System.Exception
+    {
+        public DuplicateException() { }
+
+        public DuplicateException(string message) : base(message)
+        { }
+
+        public DuplicateException(string message, System.Exception inner) : base(message, inner)
+        { }
+
+        protected DuplicateException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+    }
+
+    public class MessageMatchException : System.Exception
+    {
+        public MessageMatchException() { }
+
+        public MessageMatchException(string message) : base(message)
+        { }
+
+        public MessageMatchException(string message, System.Exception inner) : base(message, inner)
+        { }
+
+        protected MessageMatchException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+    }
+
     private SetupEvent ClientInfo;
     private int NumResponses;
     private List<List<string>> Responses = new List<List<string>>();
@@ -57,12 +87,9 @@ public class Client : Actor
         {
             int index = random.Next(this.ClientInfo.Peers.Count);
             this.SendEvent(this.ClientInfo.Peers[index], new BroadcastRequestEvent() { Message = $"message-{i}" });
-            int crash = random.Next(100);
-            if (crash == 0)
-            {
-                this.SendEvent(this.ClientInfo.Peers[index], new CrashEvent());
-            }
         }
+
+        Thread.Sleep(100);
 
         foreach (var process in this.ClientInfo.Peers)
         {
@@ -78,8 +105,10 @@ public class Client : Actor
 
         if (response != null)
         {
-            // this.Assert(!response.Messages.GroupBy(n => n).Any(c => c.Count() > 1), "DuplicateException");
-            this.Assert(response.Messages.Count == response.Messages.Distinct().ToList().Count, "DuplicateException");
+            if (response.Messages.Count != response.Messages.Distinct().Count())
+            {
+                throw new DuplicateException();
+            }
 
             this.Responses.Add(response.Messages);
             this.NumResponses++;
@@ -94,7 +123,22 @@ public class Client : Actor
                         {
                             List<string> onlyInFirstSet = this.Responses[i].Except(this.Responses[j]).ToList();
                             List<string> onlyInSecondSet = this.Responses[j].Except(this.Responses[i]).ToList();
-                            this.Assert(onlyInFirstSet.Count == 0 && onlyInSecondSet.Count == 0, "MessageMatchException");
+
+                            if (onlyInFirstSet.Count > 0 || onlyInSecondSet.Count > 0)
+                            {
+                                this.Logger.WriteLine("First list");
+                                foreach (var str in this.Responses[i])
+                                {
+                                    this.Logger.WriteLine(str);
+                                }
+                                this.Logger.WriteLine("------------");
+                                this.Logger.WriteLine("Second list");
+                                foreach (var str in this.Responses[j])
+                                {
+                                    this.Logger.WriteLine(str);
+                                }
+                                throw new MessageMatchException();
+                            }
                         }
                     }
                 }

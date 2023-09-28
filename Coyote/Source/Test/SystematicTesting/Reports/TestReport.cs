@@ -53,6 +53,12 @@ namespace Microsoft.Coyote.SystematicTesting
         public HashSet<string> BugReports { get; internal set; }
 
         /// <summary>
+        /// Set of bug reports and occurances.
+        /// </summary>
+        [DataMember]
+        public Dictionary<string, int> BugMap { get; internal set; }
+
+        /// <summary>
         /// Set of uncontrolled invocations.
         /// </summary>
         [DataMember]
@@ -195,6 +201,7 @@ namespace Microsoft.Coyote.SystematicTesting
             this.NumOfExploredUnfairSchedules = 0;
             this.NumOfFoundBugs = 0;
             this.BugReports = new HashSet<string>();
+            this.BugMap = new Dictionary<string, int>();
             this.UncontrolledInvocations = new HashSet<string>();
 
             this.MinControlledOperations = -1;
@@ -229,6 +236,15 @@ namespace Microsoft.Coyote.SystematicTesting
             {
                 this.NumOfFoundBugs++;
                 this.BugReports.Add(bugReport);
+
+                if (!this.BugMap.ContainsKey(bugReport))
+                {
+                    this.BugMap.Add(bugReport, 1);
+                }
+                else
+                {
+                    this.BugMap[bugReport] = this.BugMap[bugReport] + 1;
+                }
             }
 
             this.TotalControlledOperations += numOperations;
@@ -325,6 +341,19 @@ namespace Microsoft.Coyote.SystematicTesting
                 this.NumOfFoundBugs += testReport.NumOfFoundBugs;
 
                 this.BugReports.UnionWith(testReport.BugReports);
+
+                foreach (var key in testReport.BugMap.Keys)
+                {
+                    if (this.BugMap.ContainsKey(key))
+                    {
+                        this.BugMap[key] = this.BugMap[key] + testReport.BugMap[key];
+                    }
+                    else
+                    {
+                        this.BugMap.Add(key, testReport.BugMap[key]);
+                    }
+                }
+
                 this.UncontrolledInvocations.UnionWith(testReport.UncontrolledInvocations);
 
                 this.TotalControlledOperations += testReport.TotalControlledOperations;

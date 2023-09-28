@@ -6,7 +6,7 @@
     <Copyright>Copyright © Microsoft Corporation.</Copyright>
     <LangVersion>10.0</LangVersion>
     <TargetFrameworks>net7.0</TargetFrameworks>
-    <UseLocalCoyote>False</UseLocalCoyote>
+    <UseLocalCoyote>True</UseLocalCoyote>
     <UseLocalNugetPackages>False</UseLocalNugetPackages>
     <UseNugetPackages>True</UseNugetPackages>
     <UseNugetPackages Condition="'$(UseLocalCoyote)'=='yes'">False</UseNugetPackages>

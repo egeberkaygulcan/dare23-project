@@ -1,4 +1,4 @@
-Benchmarks/bin
-Benchmarks/ReliableBroadcast/obj
-Benchmarks/TestDriver/obj
-Coyote
+obj/
+bin/
+packages/
+.DS_Store

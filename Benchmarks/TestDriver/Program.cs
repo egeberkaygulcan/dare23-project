@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,19 +23,21 @@ namespace TestDriver
 
             var configuration = Configuration.Create().WithTestingIterations(10000)
                  .WithMaxSchedulingSteps(50);
+            // configuration.WithQLearningStrategy();
+            // configuration.WithPrioritizationStrategy());
+            configuration.WithTestIterationsRunToCompletion();
             configuration.WithSystematicFuzzingEnabled();
             configuration.WithVerbosityEnabled(VerbosityLevel.Info);
             configuration.WithTelemetryEnabled(false);
-            configuration.WithConsoleLoggingEnabled(true);
+            configuration.WithConsoleLoggingEnabled(false);
 
-            RunTest(ReliableBroadcast.Program.Execute, configuration,
-                 "ReliableBroadcast");
+            // RunTest(ReliableBroadcast.Program.Execute, configuration, "ReliableBroadcast", new[] { "DuplicateException", "MessageMatchException" });
 
             // RunTest(TwoPhaseCommit.Program.Execute, configuration,
             //      "TwoPhaseCommit");
 
-            // RunTest(Microsoft.Coyote.Samples.CloudMessaging.Raft.Mocking.Program.Execute, configuration,
-            //    "CloudMessaging.TestWithMocking");
+            RunTest(Microsoft.Coyote.Samples.CloudMessaging.Raft.Mocking.Program.Execute, configuration,
+               "CloudMessaging.TestWithMocking");
 
             stopWatch.Stop();
             Console.WriteLine($"Done testing in {stopWatch.ElapsedMilliseconds}ms. All expected bugs found.");
@@ -73,6 +76,12 @@ namespace TestDriver
             Console.WriteLine($"Starting to test '{testName}'.");
             engine.Run();
             Console.WriteLine($"Done testing '{testName}'. Found {engine.TestReport.NumOfFoundBugs} bugs.");
+
+            foreach (var key in engine.TestReport.BugMap.Keys)
+            {
+                Console.WriteLine($"Found {key}, {engine.TestReport.BugMap[key]} times.");
+            }
+
             if (expectedBugs.Length > 0 && engine.TestReport.NumOfFoundBugs == 0)
             {
                 foreach (var expectedBug in expectedBugs)
@@ -80,38 +89,44 @@ namespace TestDriver
                     Console.WriteLine($"Expected bug '{expectedBug}' not found.");
                 }
 
-                Environment.Exit(1);
+                // Environment.Exit(1);
             }
             else if (expectedBugs.Length > 0 && engine.TestReport.NumOfFoundBugs > 0)
             {
-                bool isFound = false;
-                var actualBug = engine.TestReport.BugReports.First();
-                foreach (var expectedBug in expectedBugs)
+                foreach (var actualBug in engine.TestReport.BugReports)
                 {
-                    if (actualBug.Contains(expectedBug))
-                    {
-                        isFound = true;
-                        break;
-                    }
-                }
-
-                if (!isFound)
-                {
+                    bool isFound = false;
+                    // var actualBug = engine.TestReport.BugReports.First();
                     foreach (var expectedBug in expectedBugs)
                     {
-                        Console.WriteLine($"Found '{actualBug}' bug instead of the expected bug '{expectedBug}'.");
+                        if (actualBug.Contains(expectedBug))
+                        {
+                            isFound = true;
+                            break;
+                        }
                     }
 
-                    Environment.Exit(1);
-                }
+                    if (!isFound)
+                    {
+                        foreach (var expectedBug in expectedBugs)
+                        {
+                            Console.WriteLine($"Found '{actualBug}' bug instead of the expected bug '{expectedBug}'.");
+                        }
 
-                Console.WriteLine($"Found expected '{actualBug}' bug.");
+                        // Environment.Exit(1);
+                    }
+
+                    Console.WriteLine($"Found expected '{actualBug}' bug.");
+                }
             }
             else if (engine.TestReport.NumOfFoundBugs > 0)
             {
                 Console.WriteLine($"Unexpected '{engine.TestReport.BugReports.First()}' bug found.");
-                Environment.Exit(1);
+                // Environment.Exit(1);
             }
+
+            Console.WriteLine(engine.GetReport());
+            Environment.Exit(1);
         }
     }
 }

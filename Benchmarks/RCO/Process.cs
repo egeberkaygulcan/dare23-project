@@ -32,7 +32,6 @@ public class Process : StateMachine
     private class Working : State { }
 
     [OnEventDoAction(typeof(GetMessagesEvent), nameof(HandleGetMessages))]
-    [IgnoreEvents(typeof(RegisterProcessEvent), typeof(BroadcastRequestEvent), typeof(RbBroadcastEvent), typeof(SingleMessageEvent), typeof(MessageEvent), typeof(RbDeliverEvent), typeof(CrashEvent))]
     private class Crashed : State { }
 
     private void BebBroadcast(Event e)
