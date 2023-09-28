@@ -25,7 +25,7 @@ namespace TestDriver
                  .WithMaxSchedulingSteps(50);
             // configuration.WithQLearningStrategy();
             // configuration.WithPrioritizationStrategy());
-            configuration.WithTestIterationsRunToCompletion();
+            // configuration.WithTestIterationsRunToCompletion();
             configuration.WithSystematicFuzzingEnabled();
             configuration.WithVerbosityEnabled(VerbosityLevel.Info);
             configuration.WithTelemetryEnabled(false);
