@@ -12,7 +12,7 @@ namespace Microsoft.Coyote.Samples.CloudMessaging.Raft.Mocking
         public static void Execute(IActorRuntime runtime)
         {
             var testScenario = new RaftTestScenario();
-            testScenario.RunTest(runtime, 5, 2);
+            testScenario.RunTest(runtime, 3, 1);
         }
     }
 }

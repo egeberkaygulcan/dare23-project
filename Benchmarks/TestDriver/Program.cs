@@ -22,22 +22,25 @@ namespace TestDriver
             stopWatch.Start();
 
             var configuration = Configuration.Create().WithTestingIterations(10000)
-                 .WithMaxSchedulingSteps(50);
+                 .WithMaxSchedulingSteps(500);
             // configuration.WithQLearningStrategy();
-            // configuration.WithPrioritizationStrategy());
-            // configuration.WithTestIterationsRunToCompletion();
+            // configuration.WithPrioritizationStrategy();
+            configuration.WithTestIterationsRunToCompletion();
             configuration.WithSystematicFuzzingEnabled();
             configuration.WithVerbosityEnabled(VerbosityLevel.Info);
             configuration.WithTelemetryEnabled(false);
             configuration.WithConsoleLoggingEnabled(false);
 
-            // RunTest(ReliableBroadcast.Program.Execute, configuration, "ReliableBroadcast", new[] { "DuplicateException", "MessageMatchException" });
+            RunTest(ReliableBroadcast.Program.Execute, configuration, "ReliableBroadcast", new[] { "DuplicateException", "MessageMatchException" });
 
             // RunTest(TwoPhaseCommit.Program.Execute, configuration,
             //      "TwoPhaseCommit");
 
-            RunTest(Microsoft.Coyote.Samples.CloudMessaging.Raft.Mocking.Program.Execute, configuration,
-               "CloudMessaging.TestWithMocking");
+            // RunTest(Microsoft.Coyote.Samples.CloudMessaging.Raft.Mocking.Program.Execute, configuration,
+            //    "CloudMessaging.TestWithMocking");
+
+            // RunTest(Microsoft.Coyote.Samples.CloudMessaging.Raft.Nondeterminism.Program.Execute, configuration,
+            //    "CloudMessaging.RaftTestScenarioWithFailure");
 
             stopWatch.Stop();
             Console.WriteLine($"Done testing in {stopWatch.ElapsedMilliseconds}ms. All expected bugs found.");

@@ -5,7 +5,7 @@ using Microsoft.Coyote.Actors;
 using Microsoft.Coyote.Runtime;
 using Microsoft.Coyote.Samples.CloudMessaging.Mocks;
 
-namespace Microsoft.Coyote.Samples.CloudMessaging
+namespace Microsoft.Coyote.Samples.CloudMessaging.Raft.Nondeterminism
 {
     /// <summary>
     /// Tests the Raft service implementation by creating, hosting and executing

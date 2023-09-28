@@ -32,6 +32,7 @@ namespace Microsoft.Coyote.Samples.CloudMessaging.Mocks
                     this.SendEvent(server, request);
                     if (this.RandomBoolean())
                     {
+                        this.Logger.WriteLine("Sending duplicate.");
                         // Nondeterministically send a duplicate vote to exercise the corner case
                         // where networking communication sends duplicate messages. This can cause
                         // a Raft server to count duplicate votes, leading to more than one leader
